@@ -20,17 +20,28 @@ def get_audio_duration(file_path):
     except:
         return 0.0
 
+def load_env_file():
+    """Simple parser to load .env file from root directory."""
+    pkg_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    candidates = [
+        os.path.join(pkg_root, ".env"),
+        os.path.join(os.getcwd(), ".env")
+    ]
+    for env_path in candidates:
+        if os.path.exists(env_path):
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        k = k.strip()
+                        v = v.strip().strip("'\"")
+                        if k and k not in os.environ:
+                            os.environ[k] = v
+
 class SarvamVoiceEngine:
-    def __init__(self, api_key=None, speaker="shubh", model="bulbul:v1", pace=1.0):
-        """
-        Initializes the Sarvam AI Hindi Voice Engine.
-        
-        Args:
-            api_key (str): Sarvam API subscription key. If None, reads from SARVAM_API_KEY env var.
-            speaker (str): Speaker persona ('shubh', 'arvind', 'amol', 'meera', 'pavithra', etc.)
-            model (str): 'bulbul:v1' or 'bulbul:v2'
-            pace (float): Speed multiplier (0.5 to 2.0). Default 1.0.
-        """
+    def __init__(self, api_key=None, speaker="shubh", model="bulbul:v3", pace=1.0):
+        load_env_file()
         self.api_key = api_key or os.environ.get("SARVAM_API_KEY", "")
         self.speaker = speaker
         self.model = model
@@ -60,7 +71,7 @@ class SarvamVoiceEngine:
             "model": self.model
         }
         
-        response = requests.post(SARVAM_TTS_URL, json=payload, headers=headers)
+        response = requests.post(SARVAM_TTS_URL, json=payload, headers=headers, timeout=30)
         if response.status_code != 200:
             raise RuntimeError(f"Sarvam AI Error ({response.status_code}): {response.text}")
             

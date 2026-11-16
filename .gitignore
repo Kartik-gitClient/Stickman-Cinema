@@ -71,6 +71,9 @@ dist/
 .eggs/
 
 # IDE & OS files
+.env
+*.env
+.env.*
 .vscode/
 .idea/
 .DS_Store

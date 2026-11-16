@@ -1,16 +1,18 @@
 """
 Stickman Cinema Command Line Interface (CLI).
 Unified entrypoint for slicing, voice synthesis, Sarvam AI Hindi TTS,
-portrait shorts clipping, motion generation, and master rendering.
+Soundza SFX search & downloads, portrait shorts clipping, and pipeline execution.
 """
 
 import argparse
 import sys
 import os
 import glob
+import json
 from .slicer import slice_3x3_grid
 from .voice_engine import VoiceEngine
 from .sarvam_tts import SarvamVoiceEngine
+from .soundza_sfx import SoundzaClient
 from .shorts_clipper import generate_portrait_short, auto_slice_episode_into_shorts
 
 def cmd_slice(args):
@@ -86,6 +88,24 @@ def cmd_clip(args):
         )
         print(f"✓ Portrait short generated: {out_file}")
 
+def cmd_sfx(args):
+    """Soundza sound effects search and download."""
+    client = SoundzaClient(api_key=args.api_key)
+    if args.sfx_action == "search":
+        print(f"🔍 Searching Soundza for: '{args.query}'...")
+        sounds = client.search(args.query, per_page=args.limit)
+        print(f"Found {len(sounds)} sounds:")
+        for s in sounds:
+            print(f"  • [{s.get('id')}] {s.get('title')} ({s.get('duration')}s) - {s.get('url')}")
+    elif args.sfx_action == "download":
+        out = args.out or f"{args.id}.wav"
+        print(f"⬇️ Downloading Soundza ID: {args.id} -> {out}...")
+        client.download_sound(args.id, out)
+        print(f"✓ Saved to {out}")
+    elif args.sfx_action == "kit":
+        out_dir = args.out or "./assets/sfx"
+        client.download_curated_survival_kit(out_dir)
+
 def main():
     parser = argparse.ArgumentParser(
         prog="stickman-cinema",
@@ -132,6 +152,27 @@ def main():
     clip_parser.add_argument("--start-part", type=int, default=1, help="Starting part number for auto-slice")
     clip_parser.add_argument("--cta", default="WATCH FULL 10-MIN EPISODE ON CHANNEL", help="Bottom CTA text")
 
+    # SFX command (Soundza)
+    sfx_parser = subparsers.add_parser("sfx", help="Search & download SFX from Soundza API")
+    sfx_sub = sfx_parser.add_subparsers(dest="sfx_action", help="SFX action")
+    
+    # sfx search
+    sfx_search = sfx_sub.add_parser("search", help="Search sounds")
+    sfx_search.add_argument("--query", "-q", required=True, help="Search terms (e.g. 'whoosh', 'metal clang')")
+    sfx_search.add_argument("--limit", type=int, default=5, help="Number of results")
+    sfx_search.add_argument("--api-key", help="Soundza API Key (or set SOUNDZA_API_KEY env var)")
+
+    # sfx download
+    sfx_dl = sfx_sub.add_parser("download", help="Download sound by ID")
+    sfx_dl.add_argument("--id", required=True, help="Soundza sound ID")
+    sfx_dl.add_argument("--out", required=True, help="Output file path (.wav)")
+    sfx_dl.add_argument("--api-key", help="Soundza API Key (or set SOUNDZA_API_KEY env var)")
+
+    # sfx kit
+    sfx_kit = sfx_sub.add_parser("kit", help="Download curated survival SFX kit")
+    sfx_kit.add_argument("--out", default="./assets/sfx", help="Output directory")
+    sfx_kit.add_argument("--api-key", help="Soundza API Key (or set SOUNDZA_API_KEY env var)")
+
     # Version
     subparsers.add_parser("version", help="Show version")
 
@@ -144,6 +185,8 @@ def main():
         cmd_hindi_voice(args)
     elif args.command == "clip":
         cmd_clip(args)
+    elif args.command == "sfx":
+        cmd_sfx(args)
     elif args.command == "version":
         from . import __version__
         print(f"Stickman Cinema v{__version__}")
