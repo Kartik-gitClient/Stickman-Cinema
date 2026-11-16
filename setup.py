@@ -11,6 +11,7 @@ setup(
         "soundfile>=0.12.0",
         "numpy>=1.20.0",
         "kokoro-onnx>=0.3.0",
+        "requests>=2.28.0",
     ],
     entry_points={
         "console_scripts": [

@@ -84,7 +84,38 @@ stickman-cinema voice \
   --speed 0.98
 ```
 
-### 3. Check CLI Version
+### 3. Synthesize Hindi Voiceover (Sarvam AI)
+Synthesizes Hindi narration sentences with Sarvam AI's Bulbul engine:
+```bash
+stickman-cinema hindi-voice \
+  --lines-file ./hindi_script.txt \
+  --out ./output/audio_hindi \
+  --api-key "YOUR_SARVAM_API_KEY" \
+  --speaker shubh
+```
+
+### 4. Clip Landscape Master into 9:16 Portrait Shorts (Reels / TikTok)
+Automatically converts a 16:9 widescreen master into high-retention 9:16 vertical shorts with blurred ambient background, series header, part badge, and progress bar:
+```bash
+# Auto-slice an entire 8-10 minute episode into sequential ~50s Shorts:
+stickman-cinema clip \
+  --input ./renders/master_ep01.mp4 \
+  --out-dir ./shorts_ep01 \
+  --auto \
+  --title "50 DAYS STICKMAN SURVIVAL" \
+  --duration 50.0
+
+# Or clip a single custom short:
+stickman-cinema clip \
+  --input ./renders/master_ep01.mp4 \
+  --out ./shorts_ep01/short_part1.mp4 \
+  --start 0.0 \
+  --duration 45.0 \
+  --title "50 DAYS STICKMAN SURVIVAL" \
+  --part "PART 1"
+```
+
+### 5. Check CLI Version
 ```bash
 stickman-cinema version
 ```
