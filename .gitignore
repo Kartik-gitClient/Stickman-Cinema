@@ -1,0 +1,78 @@
+# =====================================================================
+# Stickman Cinema Git Ignore Specification
+# STRICT: TOOL FILES ONLY. NO PROJECTS, NO MEDIA, NO MP4, NO BINARIES
+# =====================================================================
+
+# Projects Directory (Stories, scripts, scenes, local audio, project assets)
+projects/
+assets/
+renders/
+
+# Media formats (Strictly ignored)
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.flv
+*.webm
+
+# Audio formats
+*.wav
+*.mp3
+*.aac
+*.m4a
+*.flac
+*.ogg
+
+# Images & Graphics
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.bmp
+*.gif
+*.tif
+*.tiff
+
+# Subtitle files
+*.ass
+*.srt
+
+# Real-ESRGAN Vulkan Executables, Archives & Binary Models
+tools/realesrgan/*.exe
+tools/realesrgan/*.dll
+tools/realesrgan/*.zip
+tools/realesrgan/*.jpg
+tools/realesrgan/*.png
+tools/realesrgan/*.mp4
+tools/realesrgan/models/
+
+# AI Models & Checkpoints
+*.onnx
+*.bin
+*.param
+*.pt
+*.pth
+*.safetensors
+
+# Temporary folders & caches
+temp_*
+tmp_*
+scratch/
+.cache/
+
+# Python build artifacts & caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
